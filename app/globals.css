@@ -201,3 +201,31 @@ h1,h2,h3,p,a,span,dd{overflow-wrap:anywhere}
 .sub-header nav{color:#c6cec8}
 .sub-header .brand,.sub-header .dark-action{color:#fff}
 .sub-header .header-action{background:#141a16;border-color:#3b463e}
+
+/* Mobile-first navigation and layout guardrails */
+.sub-header{position:sticky;top:0;z-index:100;width:100%;height:4.25rem;padding-inline:1rem;background:#0e1310;border-bottom:1px solid #2a342d}
+.sub-header>nav,.sub-header>.desktop-action{display:none}
+.sub-header .brand{position:relative;z-index:2;color:#fff;font-size:1.05rem;white-space:nowrap}
+.mobile-menu{display:block;position:relative;margin-left:auto}
+.mobile-menu summary{width:2.75rem;height:2.75rem;display:grid;place-items:center;border:1px solid #3b463e;border-radius:.8rem;background:#141a16;color:#fff;cursor:pointer;list-style:none}
+.mobile-menu summary::-webkit-details-marker{display:none}
+.mobile-menu[open] summary{border-color:var(--lime);color:var(--lime)}
+.mobile-menu-panel{position:fixed;top:4.25rem;left:0;right:0;display:grid;padding:.7rem 1rem 1rem;border-bottom:1px solid #344038;background:rgba(14,19,16,.98);box-shadow:0 1.25rem 2.5rem rgba(0,0,0,.38);backdrop-filter:blur(16px)}
+.mobile-menu-panel>a{padding:1rem .25rem;border-bottom:1px solid #28322b;color:#dce2dd;font-size:.9rem;font-weight:500}
+.mobile-menu-panel .mobile-contact{display:flex;align-items:center;justify-content:space-between;margin-top:.7rem;padding:.9rem 1rem;border:0;border-radius:.8rem;background:var(--lime);color:#090b0a;font-weight:700}
+
+@media(min-width:901px){
+  .sub-header{height:5.5rem;padding-inline:2rem}
+  .sub-header>nav{display:flex}
+  .sub-header>.desktop-action{display:flex}
+  .mobile-menu{display:none}
+}
+
+@media(max-width:760px){
+  main,section,footer{min-width:0}
+  .hero-grid,.statement,.section-heading,.solution-grid,.numbers dl,.footer-grid,.sub-hero-grid,.service-body,.about-purpose,.contact-page,.unit-grid{grid-template-columns:minmax(0,1fr)}
+  .hero-grid{padding-top:3.5rem}
+  .hero h1{font-size:clamp(2.2rem,11vw,3.15rem)}
+  .hero-card{width:100%;justify-self:stretch}
+  .sub-hero-grid{padding-top:3.5rem}
+}
