@@ -1,5 +1,10 @@
 import { ArrowDown, ArrowRight, ArrowUpRight, Check, Globe2, Landmark, Search, Ship } from "lucide-react";
+import type { Metadata } from "next";
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
 
 const solutions = [
   { id: "01", icon: Landmark, label: "Supply Chain Finance", title: "Importe agora. Pague com prazo.", text: "Pagamento à vista para seu fornecedor na Ásia e até 180 dias para sua empresa pagar no Brasil.", action: "Conhecer Supply Chain Finance" },
