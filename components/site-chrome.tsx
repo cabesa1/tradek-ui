@@ -1,0 +1,5 @@
+import { ArrowUpRight } from "lucide-react";
+
+export function SiteHeader(){return <header className="sub-header shell"><a className="brand inverse" href="/"><i/> TRADEK</a><nav><a href="/scf">Supply Chain Finance</a><a href="/proc">Procurement</a><a href="/motos">Produtos</a><a href="/sobre">A TradeK</a><a href="/faq">FAQ</a></nav><a className="header-action dark-action" href="/contato">Solicitar análise <ArrowUpRight size={16}/></a></header>}
+
+export function SiteFooter(){return <footer><div className="shell footer-grid"><a className="brand inverse" href="/"><i/> TRADEK</a><p>Crédito, procurement e gestão para operações entre China e Brasil.</p><div><a href="/scf">Supply Chain Finance</a><a href="/proc">Procurement</a><a href="/motos">Produtos</a><a href="/sobre">A TradeK</a></div><div><a href="/faq">Perguntas frequentes</a><a href="/contato">Contato</a><a href="mailto:tradek@globalk.com.br">tradek@globalk.com.br</a></div></div><div className="shell legal"><span>© 2026 TradeK. Todos os direitos reservados.</span><span>A TradeK não é uma instituição financeira.</span></div><div className="footer-word" aria-hidden="true">TRADEK</div></footer>}
