@@ -229,3 +229,81 @@ h1,h2,h3,p,a,span,dd{overflow-wrap:anywhere}
   .hero-card{width:100%;justify-self:stretch}
   .sub-hero-grid{padding-top:3.5rem}
 }
+
+/* Minimal institutional homepage */
+.minimal-home{background:#090b0a;color:#f3f5f2}
+.bank-hero{position:relative;border-bottom:1px solid #28312b;background:radial-gradient(circle at 85% 20%,rgba(195,249,41,.09),transparent 28%),#0d120f}
+.bank-hero-grid{min-height:calc(100svh - 5.5rem);display:grid;grid-template-columns:minmax(0,1.2fr) minmax(20rem,.8fr);align-items:center;gap:8rem;padding-block:7rem}
+.bank-hero-copy h1{max-width:12ch;margin:1.5rem 0 1.8rem;font-size:clamp(3.5rem,6.4vw,6.5rem);font-weight:500;line-height:.94;letter-spacing:-.07em}
+.bank-hero-copy>p:not(.eyebrow){max-width:39rem;margin:0;color:#9ca79f;font-size:1rem;line-height:1.7}
+.bank-actions{display:flex;align-items:center;gap:1.5rem;margin-top:2.25rem}
+.bank-link{display:flex;align-items:center;gap:.45rem;color:#b7c0ba;font-size:.8rem;font-weight:600}
+.bank-summary{padding:2rem;border:1px solid #354038;border-radius:1.25rem;background:rgba(16,23,18,.82)}
+.bank-summary-head{display:flex;align-items:center;justify-content:space-between;color:#89958c;font-size:.7rem;text-transform:uppercase;letter-spacing:.1em}
+.bank-summary-head svg{color:var(--lime)}
+.bank-summary>strong{display:flex;align-items:center;gap:1rem;margin:4rem 0 3rem;font-size:1.4rem;font-weight:500}
+.bank-summary>strong i{height:1px;flex:1;background:linear-gradient(90deg,#465149,var(--lime));position:relative}
+.bank-summary>strong i:after{content:"";position:absolute;right:0;top:-3px;width:7px;height:7px;border-radius:50%;background:var(--lime)}
+.bank-summary dl{margin:0}.bank-summary dl div{display:flex;justify-content:space-between;gap:1rem;padding:1.1rem 0;border-top:1px solid #2b352e}
+.bank-summary dt{color:#7f8a82;font-size:.76rem}.bank-summary dd{margin:0;font-size:.82rem;font-weight:600}
+.bank-summary small{display:block;margin-top:1rem;color:#68736b;font-size:.62rem;line-height:1.5}
+.bank-services{padding-top:8rem;padding-bottom:8rem}
+.bank-section-title{display:grid;grid-template-columns:.65fr 1.35fr;gap:4rem;margin-bottom:4rem}
+.bank-section-title h2{max-width:42rem;margin:0;font-size:clamp(2.5rem,4vw,4.2rem);font-weight:500;line-height:1;letter-spacing:-.055em}
+.bank-service-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid #303a33}
+.bank-service-grid>a{min-height:25rem;display:flex;flex-direction:column;padding:2.2rem;border-bottom:1px solid #303a33;border-right:1px solid #303a33}
+.bank-service-grid>a:first-child{border-left:1px solid #303a33}
+.bank-service-grid svg{color:var(--lime)}
+.bank-service-grid h3{max-width:13rem;margin:5rem 0 1rem;font-size:1.4rem;font-weight:500;letter-spacing:-.035em}
+.bank-service-grid p{margin:0;color:#849087;font-size:.82rem;line-height:1.6}
+.bank-service-grid span{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:1rem;border-top:1px solid #29322c;font-size:.72rem;font-weight:600}
+.bank-institution{display:grid;grid-template-columns:.65fr 1.35fr auto;align-items:center;gap:4rem;padding-top:2rem;padding-bottom:2rem;border-top:1px solid #303a33;border-bottom:1px solid #303a33}
+.bank-institution>div,.bank-institution>a{display:flex;align-items:center;gap:.6rem;font-size:.72rem}.bank-institution svg{color:var(--lime)}
+.bank-institution p{max-width:42rem;margin:0;color:#c7cec9;font-size:1.15rem;line-height:1.5}
+.bank-cta{padding-top:9rem;padding-bottom:9rem;text-align:center}.bank-cta .eyebrow{justify-content:center}.bank-cta h2{margin:1.4rem 0 2.5rem;font-size:clamp(2.7rem,5vw,5rem);font-weight:500;letter-spacing:-.06em}.bank-cta .pill{margin:auto}
+
+@media(max-width:760px){
+  .bank-hero-grid{min-height:auto;grid-template-columns:1fr;gap:3rem;padding-top:4rem;padding-bottom:4rem}
+  .bank-hero-copy h1{font-size:clamp(2.7rem,13vw,3.7rem)}
+  .bank-actions{align-items:flex-start;flex-direction:column;gap:1.2rem}
+  .bank-summary{padding:1.35rem}.bank-summary>strong{margin:2.5rem 0 2rem}
+  .bank-services{padding-top:5rem;padding-bottom:5rem}
+  .bank-section-title{grid-template-columns:1fr;gap:1.2rem;margin-bottom:2.5rem}
+  .bank-section-title h2{font-size:2.35rem}
+  .bank-service-grid{grid-template-columns:1fr}
+  .bank-service-grid>a{min-height:17rem;border-left:1px solid #303a33;padding:1.5rem}
+  .bank-service-grid h3{margin-top:3rem}
+  .bank-institution{grid-template-columns:1fr;gap:1.5rem;padding-block:2.5rem}
+  .bank-institution>a{justify-content:space-between;padding-top:1.25rem;border-top:1px solid #29322c}
+  .bank-cta{padding-top:6rem;padding-bottom:6rem}.bank-cta h2{font-size:2.65rem}
+}
+
+/* Minimal institutional footer */
+.institutional-footer{overflow:visible;padding:0;background:#0d120f;border-radius:0;border-top:1px solid #2b352e}
+.institutional-footer-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(12rem,.7fr) minmax(16rem,.8fr);gap:7rem;padding-top:4.5rem;padding-bottom:4.5rem}
+.footer-brand{display:flex;flex-direction:column;align-items:flex-start;gap:1.4rem}
+.footer-brand p{max-width:25rem;margin:0;color:#828d85;font-size:.82rem;line-height:1.65}
+.institutional-footer nav,.footer-contact{display:flex;flex-direction:column;align-items:flex-start;gap:.8rem;font-size:.78rem}
+.institutional-footer nav>span,.footer-contact>span{margin-bottom:.45rem;color:#68736b;font-size:.62rem;text-transform:uppercase;letter-spacing:.12em}
+.institutional-footer nav a,.footer-contact a{color:#c6cec8}
+.footer-contact a:last-child{display:flex;align-items:center;gap:.45rem;margin-top:.6rem;color:var(--lime);font-weight:600}
+.institutional-legal{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:2rem;padding-top:1.4rem;padding-bottom:1.4rem;border-top:1px solid #28312b;color:#657068;font-size:.62rem}
+.institutional-legal>div{display:flex;gap:1.5rem}.institutional-legal>span:last-child{text-align:right}
+
+.site-brand{display:inline-flex;align-items:center;color:#fff}
+.brand-logo{display:inline-flex;align-items:center;gap:.7rem;color:#fff}
+.brand-monogram{width:2.05rem;height:auto;display:block;overflow:visible}
+.brand-word-wrap{display:flex;flex-direction:column;gap:.16rem}
+.brand-word{font-size:1.05rem;font-weight:700;line-height:1;letter-spacing:.09em}
+.brand-word>span{color:#b9ff1f}
+.brand-word-wrap small{color:#b9ff1f;font-size:.38rem;font-weight:600;line-height:1;text-transform:uppercase;letter-spacing:.1em}
+.mobile-brand{display:inline-flex}.desktop-brand{display:none}
+.footer-logo .brand-monogram{width:3.2rem}.footer-logo .brand-word{font-size:1.45rem}.footer-logo .brand-word-wrap small{font-size:.46rem}
+
+@media(max-width:760px){
+  .institutional-footer-grid{grid-template-columns:1fr;gap:2.75rem;padding-top:3.5rem;padding-bottom:3.5rem}
+  .institutional-legal{grid-template-columns:1fr;gap:1rem}
+  .institutional-legal>div{grid-row:2}.institutional-legal>span:last-child{text-align:left}
+}
+
+@media(min-width:761px){.mobile-brand{display:none}.desktop-brand{display:inline-flex}}
