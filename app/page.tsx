@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
-import { ArrowUpRight, Globe2, Landmark, Search, ShieldCheck } from "lucide-react";
+import { ArrowUpRight, Box, Globe2, Link2, ShieldCheck } from "lucide-react";
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
 
 export const metadata: Metadata = { alternates: { canonical: "/" } };
 
 const services = [
-  { icon: Landmark, title: "Supply Chain Finance", text: "Pagamento ao fornecedor na origem e prazo para sua empresa no Brasil.", href: "/scf" },
-  { icon: Search, title: "Procurement Internacional", text: "Busca, validação e negociação com fornecedores na China.", href: "/proc" },
-  { icon: Globe2, title: "Produtos da China", text: "Operações de compra em lote com suporte da origem à entrega.", href: "/motos" },
+  { icon: Link2, title: "Supply Chain Finance", text: "Pagamento ao fornecedor na origem e prazo para sua empresa no Brasil.", href: "/scf" },
+  { icon: Globe2, title: "Procurement Internacional", text: "Busca, validação e negociação com fornecedores na China.", href: "/proc" },
+  { icon: Box, title: "Produtos da China", text: "Operações de compra em lote com suporte da origem à entrega.", href: "/motos" },
 ];
 
 export default function Home() {
