@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import "./globals.css";
+import { TradekChat } from "@/components/tradek-chat";
+import { LanguageProvider } from "@/components/language-provider";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.tradek.com.br"),
@@ -10,4 +13,4 @@ export const metadata: Metadata = {
   icons: { icon: "/favicon.svg", shortcut: "/favicon.svg" },
 };
 
-export default function RootLayout({children}:{children:React.ReactNode}) { return <html lang="pt-BR"><body>{children}</body></html>; }
+export default function RootLayout({children}:{children:React.ReactNode}) { return <html lang="pt-BR"><body><LanguageProvider>{children}<Suspense fallback={null}><TradekChat/></Suspense></LanguageProvider></body></html>; }
