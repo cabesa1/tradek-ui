@@ -103,33 +103,35 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ reply: `${language==="pt"?"Perfeito":language==="en"?"Perfect":"Perfecto"}${salutation}. ${copy.done}`, nextStage: 6, qualified: true });
     }
     }
+    const groqKey = process.env.GROQ_API_KEY;
+    const useGroq = Boolean(groqKey);
+    if (process.env.VERCEL && !useGroq && !process.env.OLLAMA_BASE_URL) {
+      return NextResponse.json({ error: "O agente ainda não foi configurado no servidor." }, { status: 503 });
+    }
     const baseUrl = process.env.OLLAMA_BASE_URL ?? "http://127.0.0.1:11434";
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 90_000);
     const modelMessages = messages.map((message, index) => index === messages.length - 1 && message.role === "user" && language !== "pt" ? { ...message, content: `${message.content}\n\n${language === "en" ? "Answer this message only in natural English." : "Responde este mensaje únicamente en español natural."}` } : message);
     const knowledge = getTradekKnowledge(answer);
-    const response = await fetch(`${baseUrl}/api/chat`, {
+    const modelInput = [
+      { role: "system", content: `${systemPrompt}\nRespond only in ${language==="pt"?"Brazilian Portuguese":language==="en"?"English":"Spanish"}.\n${unitContext[body.unit ?? "geral"] ?? unitContext.geral}\n\nUse this TradeK skill as your factual source:\n${knowledge}` },
+      ...modelMessages,
+    ];
+    const response = await fetch(useGroq ? "https://api.groq.com/openai/v1/chat/completions" : `${baseUrl}/api/chat`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...(useGroq ? { Authorization: `Bearer ${groqKey}` } : {}) },
       signal: controller.signal,
-      body: JSON.stringify({
-        model: process.env.OLLAMA_MODEL ?? "qwen2.5:3b",
-        stream: true,
-        keep_alive: "30m",
-        messages: [
-          { role: "system", content: `${systemPrompt}\nRespond only in ${language==="pt"?"Brazilian Portuguese":language==="en"?"English":"Spanish"}.\n${unitContext[body.unit ?? "geral"] ?? unitContext.geral}\n\nUse this TradeK skill as your factual source:\n${knowledge}` },
-          ...modelMessages,
-        ],
-        options: { temperature: 0.15, num_predict: 180, num_ctx: 3072 },
-      }),
+      body: JSON.stringify(useGroq
+        ? { model: process.env.GROQ_MODEL ?? "openai/gpt-oss-20b", stream: true, messages: modelInput, temperature: 0.15, reasoning_effort: "low", include_reasoning: false, max_completion_tokens: 400 }
+        : { model: process.env.OLLAMA_MODEL ?? "qwen2.5:3b", stream: true, keep_alive: "30m", messages: modelInput, options: { temperature: 0.15, num_predict: 180, num_ctx: 3072 } }),
     });
-    if (!response.ok) throw new Error(`Ollama respondeu ${response.status}`);
+    if (!response.ok) throw new Error(`Provedor de IA respondeu ${response.status}`);
     if (!response.body) throw new Error("Resposta vazia do modelo");
     const reader=response.body.getReader();const decoder=new TextDecoder();const encoder=new TextEncoder();let buffer="";
-    const stream=new ReadableStream({async pull(target){const{done,value}=await reader.read();if(done){clearTimeout(timeout);target.close();return}buffer+=decoder.decode(value,{stream:true});const lines=buffer.split("\n");buffer=lines.pop()??"";for(const line of lines){if(!line.trim())continue;try{const item=JSON.parse(line) as {message?:{content?:string}};const content=item.message?.content?.replace(/\bda cálculo\b/gi,"do cálculo");if(content)target.enqueue(encoder.encode(content))}catch{}}},cancel(){clearTimeout(timeout);reader.cancel()}});
+    const stream=new ReadableStream({async pull(target){const{done,value}=await reader.read();if(done){clearTimeout(timeout);target.close();return}buffer+=decoder.decode(value,{stream:true});const lines=buffer.split("\n");buffer=lines.pop()??"";for(const line of lines){const data=useGroq?line.trim().replace(/^data:\s*/,""):line.trim();if(!data||data==="[DONE]")continue;try{const item=JSON.parse(data) as {message?:{content?:string};choices?:Array<{delta?:{content?:string}}>};const content=(useGroq?item.choices?.[0]?.delta?.content:item.message?.content)?.replace(/\bda cálculo\b/gi,"do cálculo");if(content)target.enqueue(encoder.encode(content))}catch{}}},cancel(){clearTimeout(timeout);reader.cancel()}});
     return new Response(stream,{headers:{"Content-Type":"text/plain; charset=utf-8","Cache-Control":"no-store"}});
   } catch (error) {
-    const message = error instanceof Error && error.name === "AbortError" ? "O agente local demorou para responder." : "O agente local está indisponível.";
+    const message = error instanceof Error && error.name === "AbortError" ? "O agente demorou para responder." : "O agente está indisponível no momento.";
     return NextResponse.json({ error: message }, { status: 503 });
   }
 }
