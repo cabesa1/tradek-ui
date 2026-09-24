@@ -32,9 +32,9 @@ const fallback = {
 };
 
 const chatCopy = {
-  pt: { greeting: "Olá! Para começar, qual é o seu nome?", online: "Online · IA local", placeholder: "Digite sua mensagem…", disclaimer: "Respostas geradas por IA. Confirme condições comerciais com a equipe TradeK." },
-  en: { greeting: "Hello! To get started, what is your name?", online: "Online · Local AI", placeholder: "Type your message…", disclaimer: "AI-generated answers. Confirm commercial terms with the TradeK team." },
-  es: { greeting: "¡Hola! Para comenzar, ¿cuál es su nombre?", online: "En línea · IA local", placeholder: "Escriba su mensaje…", disclaimer: "Respuestas generadas por IA. Confirme las condiciones comerciales con el equipo TradeK." },
+  pt: { greeting: "Olá! Para começar, qual é o seu nome?", subtitle: "Assistente virtual", placeholder: "Digite sua mensagem…", error: "Não consegui responder agora. Tente novamente em instantes.", disclaimer: "Respostas geradas por IA. Confirme condições comerciais com a equipe TradeK." },
+  en: { greeting: "Hello! To get started, what is your name?", subtitle: "Virtual assistant", placeholder: "Type your message…", error: "I couldn't reply right now. Please try again shortly.", disclaimer: "AI-generated answers. Confirm commercial terms with the TradeK team." },
+  es: { greeting: "¡Hola! Para comenzar, ¿cuál es su nombre?", subtitle: "Asistente virtual", placeholder: "Escriba su mensaje…", error: "No pude responder ahora. Inténtelo de nuevo en unos momentos.", disclaimer: "Respuestas generadas por IA. Confirme las condiciones comerciales con el equipo TradeK." },
 };
 const titles = {
   pt: { geral:"Agente TradeK", supply_chain_finance:"Agente Supply Chain Finance", procurement:"Agente Procurement Internacional", produtos_motos:"Agente Produtos da China" },
@@ -104,7 +104,7 @@ export function TradekChat() {
     } catch {
       setMessages((current) => [...current, {
         role: "assistant",
-        content: "Não consegui acessar o agente local agora. Confirme se o Ollama está aberto e tente novamente.",
+        content: copy.error,
       }]);
     } finally {
       setLoading(false);
@@ -130,7 +130,7 @@ export function TradekChat() {
     {open && <section className="chat-panel" role="dialog" aria-label={title}>
       <header className="chat-header">
         <span className="chat-avatar"><Sparkles size={18}/></span>
-        <div><strong>{title}</strong><small><i/> {copy.online}</small></div>
+        <div><strong>{title}</strong><small>{copy.subtitle}</small></div>
         <button type="button" onClick={() => setOpen(false)} aria-label="Fechar conversa"><X size={18}/></button>
       </header>
 
