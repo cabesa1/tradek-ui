@@ -30,12 +30,23 @@ const askQuestionCopy: Record<Language, string> = {
   en: "Of course. What would you like to know?",
   es: "Claro. ¿Cuál es su duda?",
 };
+const clarifyQuestionCopy: Record<Language, string> = {
+  pt: "Pode me dizer o que você gostaria de saber sobre isso?",
+  en: "What would you like to know about that?",
+  es: "¿Qué le gustaría saber sobre eso?",
+};
+const topicOnly = /^(?:fob|cif|exw|fca|cfr|dap|ddp|importa(?:ção|cao|r)|exporta(?:ção|cao|r)|financia(?:mento|r)|crédito|credito|caixa|taxas?|custos?|preços?|prazos?|fornecedores?|produtos?|frete|seguro|tributos?|impostos?|supply chain|procurement|shipping|import(?:ing)?|export(?:ing)?|finance|credit|cash|rates?|costs?|prices?|suppliers?|products?|importaci[oó]n|exportaci[oó]n|financiaci[oó]n|proveedores?|productos?)$/i;
+function nameFromHistory(messages: ChatMessage[]) {
+  const introduction = messages.find((message) => message.role === "assistant" && /^(?:Prazer|Nice to meet you|Mucho gusto), /i.test(message.content));
+  return introduction?.content.match(/^(?:Prazer|Nice to meet you|Mucho gusto),\s+([^.!?]+)/i)?.[1].trim().split(/\s+/)[0].slice(0, 30);
+}
 function detectLanguage(text:string,preferred?:string):Language{if(/\b(the|what|why|how|company|supplier|dollars?|hello|hi|my name|i have|cost)\b/i.test(text))return"en";if(/[¿¡]|\b(qué|cuál|cuánto|quién|proveedor|importación|hola|me llamo|tengo|costo|plazo)\b/i.test(text))return"es";return preferred==="en"||preferred==="es"?preferred:"pt"}
 function demandFor(language:Language,unit:string){const values={pt:demandQuestion[unit]??demandQuestion.geral,en:{supply_chain_finance:"What does your company plan to import, and from which country in Asia?",procurement:"What product or supplier does your company need to find in China?",produtos_motos:"What product from China is your company looking for, and in what quantity?",geral:"What does your company need: import finance, supplier sourcing or products from China?"}[unit as "geral"]??"What does your company need: import finance, supplier sourcing or products from China?",es:{supply_chain_finance:"¿Qué desea importar su empresa y desde qué país de Asia?",procurement:"¿Qué producto o proveedor necesita encontrar su empresa en China?",produtos_motos:"¿Qué producto de China busca su empresa y en qué cantidad?",geral:"¿Qué necesita su empresa: financiación de importación, búsqueda de proveedores o productos de China?"}[unit as "geral"]??"¿Qué necesita su empresa: financiación de importación, búsqueda de proveedores o productos de China?"};return values[language]}
 
 const systemPrompt = `Você é o consultor comercial da TradeK para operações entre Ásia e Brasil.
 Leia a conversa e a base recuperada antes de responder. Responda à intenção exata; não confunda importação, tributos, logística, produção, Supply Chain e Supply Chain Finance.
 Não presuma o assunto de uma dúvida que o cliente ainda não fez. Se ele apenas disser que deseja perguntar ou esclarecer algo, peça que envie a pergunta sem sugerir FOB, preço, crédito ou qualquer outro tema.
+Se a mensagem for uma palavra ou frase curta, considere a pergunta imediatamente anterior. Use-a como resposta somente quando a relação for clara; caso contrário, peça esclarecimento. Não transforme uma palavra isolada em um dado cadastral ou uma demanda inventada.
 Use até 7 linhas curtas, sem gerúndio, com explicação suficiente para esclarecer e avançar a conversa. Faça no máximo uma pergunta específica ao final. Não repita a pergunta nem use frases vagas.
 Use sempre "a TradeK". Não invente alíquotas, taxas, aprovação, economia, licenças ou prazos garantidos. Diga quando algo depende de NCM, documentos, análise de crédito ou validação profissional.
 Se houver objeção, esclareça com fatos da base e conecte ao impacto citado. Se o cliente perguntar durante a qualificação, responda antes de retomar os dados. Nunca peça senha, cartão ou dado bancário.`;
@@ -52,7 +63,7 @@ export async function POST(request: NextRequest) {
     if (!validMessages(body.messages)) return NextResponse.json({ error: "Conversa inválida." }, { status: 400 });
     const messages = body.messages;
     const userMessages = messages.filter((message) => message.role === "user");
-    const firstName = userMessages[0]?.content.trim().replace(/[^\p{L}\p{M}' -]/gu, "").replace(/\s+/g, " ").split(" ")[0].slice(0, 30);
+    const firstName = nameFromHistory(messages);
     const answer = userMessages.at(-1)?.content.trim() ?? "";
     const previousAssistant = [...messages].reverse().find((message) => message.role === "assistant")?.content ?? "";
     const normalizedAnswer = answer.normalize("NFKC").replace(/[‘’“”]/g, "'").replace(/[.!]+$/g, "").trim();
@@ -63,19 +74,23 @@ export async function POST(request: NextRequest) {
     const wantsToAsk = /(?:primeiro|antes).*(?:d[uú]vida|pergunt)|(?:gostaria|quero|posso).*(?:tirar|fazer|esclarecer).*(?:d[uú]vida|pergunta)|i (?:have|want to ask).*(?:question|doubt)|(?:first|before).*(?:question|ask)|(?:tengo|quiero hacer|puedo hacer).*(?:pregunta|duda)|(?:primero|antes).*(?:pregunta|duda)/i.test(answer);
     const onlyAnnouncesQuestion = wantsToAsk && !/\b(fob|cif|exw|taxa|preço|preco|custo|prazo|crédito|credito|fornecedor|produto|importa(?:r|ção|cao)|frete|seguro|tributo|imposto|price|cost|rate|credit|supplier|product|import|shipping|precio|costo|tasa|crédito|proveedor|producto|importación)\b/i.test(answer);
     const currentDemandQuestion = demandFor(language,body.unit??"geral");
-    const qualificationPrompts = [copy.company, currentDemandQuestion, copy.value, copy.valueRetry, copy.cnpj, copy.cnpjRetry, copy.phone, copy.phoneRetry];
+    const qualificationPrompts = [askQuestionCopy[language], clarifyQuestionCopy[language], copy.company, currentDemandQuestion, copy.value, copy.valueRetry, copy.cnpj, copy.cnpjRetry, copy.phone, copy.phoneRetry];
     const previousWasQualification = !previousAssistant || qualificationPrompts.some((prompt) => previousAssistant.includes(prompt));
-    const shouldUseAI = looksLikeQuestion || wantsToAsk || !previousWasQualification;
+    const nameCandidate = answer.replace(/^(meu nome é|me chamo|my name is|i am|i'm|me llamo|soy)\s+/i, "").replace(/[.!]+$/g, "").replace(/\s+/g, " ").trim().slice(0, 60);
+    const isNameCandidate = stage === 0 && !topicOnly.test(nameCandidate) && /^[\p{L}\p{M}' -]+$/u.test(nameCandidate) && nameCandidate.split(" ").length <= 4;
+    const shouldUseAI = looksLikeQuestion || wantsToAsk || (!previousWasQualification && !isNameCandidate);
 
     if (onlyAnnouncesQuestion) {
       return NextResponse.json({ reply: askQuestionCopy[language], nextStage: stage });
     }
+    if (stage === 0 && topicOnly.test(answer)) {
+      return NextResponse.json({ reply: clarifyQuestionCopy[language], nextStage: stage });
+    }
 
     if (!shouldUseAI) {
     if (stage === 0) {
-      const name = answer.replace(/^(meu nome é|me chamo|my name is|i am|i'm|me llamo|soy)\s+/i, "").replace(/[^\p{L}\p{M}' -]/gu, "").replace(/\s+/g, " ").slice(0, 60);
-      if (!name || name.split(" ").length > 5 || looksLikeQuestion) return NextResponse.json({reply:copy.name,nextStage:0});
-      return NextResponse.json({ reply: `${copy.pleasure}, ${name}. ${copy.company}`, nextStage: 1 });
+      if (!isNameCandidate) return NextResponse.json({reply:copy.name,nextStage:0});
+      return NextResponse.json({ reply: `${copy.pleasure}, ${nameCandidate}. ${copy.company}`, nextStage: 1 });
     }
     if (stage === 1) {
       if (answer.length < 2 || answer.length > 100 || looksLikeQuestion) return NextResponse.json({reply:copy.company,nextStage:1});
